@@ -1,3 +1,66 @@
+/*functionality related scripts*/
+
+const tabListParent = document.getElementById("TabListParent");
+const tabContentParent = document.getElementById("TabContentParent");
+
+var tabCounter = 1;
+
+
+//New Tab button
+function addTab() {
+    const tabList = tabListParent.querySelectorAll("li");
+
+    /* Tab nav */ 
+    const li = document.createElement("li");
+    li.setAttribute("id", `tab-nav-${tabCounter}`)
+    li.setAttribute("class", "nav-item");
+    li.setAttribute("role", "presentation");
+    li.innerHTML = `
+        <button class="btn nav-link" id="tab-btn-${tabCounter}" data-bs-toggle="tab" data-bs-target="#tab${tabCounter}"
+                type="button" role="tab" aria-controls="tab${tabCounter}" aria-selected="true">
+            Empty Tab <a class="btn btn-sm btn-close" onclick="closeTab(${tabCounter})"></a>
+        </button>
+    `
+    tabListParent.insertBefore(li, tabList[tabList.length-1]);  // adding <li> to tabList befor '+' icon
+
+    /* Tab content */
+    const div = document.createElement("div");
+    div.setAttribute("class", "tab-pane fade show");
+    div.setAttribute("id", `tab${tabCounter}`);
+    div.setAttribute("role", "tabpanel");
+    div.setAttribute("aria-labelledby", `tab-${tabCounter}`);
+    div.innerHTML = `
+        <textarea name="TabContent${tabCounter}" id="TabContent${tabCounter}" class="border border-top-0" placeholder="your text goes here...${tabCounter}"></textarea>
+    `
+    tabContentParent.appendChild(div);
+
+    //incrementing 'tabCounter'
+    tabCounter++;
+}
+
+// Close Tab Button 
+function closeTab(tabId) {
+    const prevTabBtnList = document.querySelectorAll(`.nav-item button`); // collecting all 'tab nav' (old)
+    if (prevTabBtnList.length >= 2) {
+        /* Tab nav */
+        const tabNav = document.getElementById(`tab-nav-${tabId}`);
+        tabNav.remove();
+
+        /* Tab content */
+        const tabContent = document.getElementById(`tab${tabId}`);
+        tabContent.remove();
+
+        /* fall back to prev tab */
+        const prevTabBtnList = document.querySelectorAll(`.nav-item button`); // collecting all 'tab nav' (new)
+        const prevTabBtn = prevTabBtnList[prevTabBtnList.length - 1];
+        const tabTrigger = new bootstrap.Tab(prevTabBtn);
+        tabTrigger.show();
+    }
+}
+
+/*BS5.3 Modal related scripts*/
+
+
 //init modal contents
 const contentExist = `
   <!-- contentExist -->
@@ -51,12 +114,9 @@ const contentNew = `
 
 //init modal content setter
 const myModalContent = document.getElementById("myModal-content");
-console.log(init_modal_state);
 if (init_modal_state === "exist") {
-    console.log("working exits");
     myModalContent.innerHTML = contentExist;
 } else if (init_modal_state === "new") {
-    console.log("working new");
     myModalContent.innerHTML = contentNew;
 };
 

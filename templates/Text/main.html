@@ -38,24 +38,25 @@
     <div class="Custom-marginator mt-4">
 
         <!-- Tab nav -->
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="btn nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal"
-                        type="button" role="tab" aria-controls="personal" aria-selected="true">
-                    Empty Tab <a class="btn btn-sm btn-close"></a>
+        <ul class="nav nav-tabs" role="tablist" id="TabListParent">
+            <li class="nav-item" role="presentation" id="tab-nav-0">
+                <button class="btn nav-link active" id="tab-btn-0" data-bs-toggle="tab" data-bs-target="#tab0"
+                        type="button" role="tab" aria-controls="tab0" aria-selected="true">
+                    Empty Tab <a class="btn btn-sm btn-close" onclick="closeTab(0)"></a>
                 </button>
             </li>
+
             <li class="nav-item" role="presentation">
-                <button class="btn nav-link border ">
+                <a class="btn nav-link border " onclick="addTab()">
                     <strong>+</strong>
-                </button>
+                </a>
             </li>
         </ul>
 
         <!-- Tab contents -->
-        <div class="tab-content" id="TabContent">
-            <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                <textarea name="TabContent1" id="TabContent1" class="border border-top-0" placeholder="your text goes here..."></textarea>
+        <div class="tab-content" id="TabContentParent">
+            <div class="tab-pane fade show active" id="tab0" role="tabpanel" aria-labelledby="tab-0">
+                <textarea name="TabContent0" id="TabContent0" class="border border-top-0" placeholder="your text goes here..."></textarea>
             </div>
         </div>
 
