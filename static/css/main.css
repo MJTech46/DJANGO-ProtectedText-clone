@@ -1,0 +1,36 @@
+.Custom-marginator {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+button strong {
+    color: #043c6b;
+}
+textarea{
+    width: 100%;
+    height: calc(75vh);
+}
+.Custom-modal-color{
+    background-color: rgb(31, 31, 31);
+}
+.Custom-modal-transparent-bg{
+    background: url("/static/img/main/bg-diagonals-thick.png");
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: initial;
+    background-repeat: repeat;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    opacity: 0.8;
+}
+.Custom-modal-img-bg{
+    background-image: url("/static/img/main/bg-gloss-wave.png");
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: initial;
+    background-repeat: repeat-x;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+}

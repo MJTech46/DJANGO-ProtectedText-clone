@@ -1,0 +1,11 @@
+body {
+    background-color: #043c6b;
+    font-size: 17px;
+}
+
+.custom-span-color span {
+    color: white;
+}
+img{
+    width: 85%;
+}

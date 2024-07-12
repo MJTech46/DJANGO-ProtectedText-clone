@@ -1,51 +1,15 @@
+{% load static  %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>main - ProtectedText</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <title>{{ title }} - ProtectedText</title>
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-        .Custom-marginator {
-            margin-left: 10%;
-            margin-right: 10%;
-        }
-
-        button strong {
-            color: #043c6b;
-        }
-        textarea{
-            width: 100%;
-            height: calc(75vh);
-        }
-        .Custom-modal-color{
-            background-color: rgb(31, 31, 31);
-        }
-        .Custom-modal-transparent-bg{
-            background: url("img/main/bg-diagonals-thick.png");
-            background-position-x: 50%;
-            background-position-y: 50%;
-            background-size: initial;
-            background-repeat: repeat;
-            background-attachment: initial;
-            background-origin: initial;
-            background-clip: initial;
-            opacity: 0.8;
-        }
-        .Custom-modal-img-bg{
-            background-image: url("img/main/bg-gloss-wave.png");
-            background-position-x: 50%;
-            background-position-y: 50%;
-            background-size: initial;
-            background-repeat: repeat-x;
-            background-attachment: initial;
-            background-origin: initial;
-            background-clip: initial;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 
 <body>
@@ -54,11 +18,11 @@
         <div class="Custom-marginator pt-1 pb-2 pb-lg-3 pt-lg-1">
             <div class="d-flex flex-wrap justify-content-between gap-2">
                 <div class="">
-                    <img src="img/main/logo.png" alt="logo" style="width: 250px;">
+                    <img src="{% static 'img/main/logo.png' %}" alt="logo" style="width: 250px;">
                 </div>
                 <div class="">
-                    <img src="img/main/android-app-icon.png" alt="android-app-icon" style="width: 30px;">
-                    <img src="img/main/fight-hand-text-icon.png" alt="fight-hand-text-icon" style="width: 100px;">
+                    <img src="{% static 'img/main/android-app-icon.png' %}" alt="android-app-icon" style="width: 30px;">
+                    <img src="{% static 'img/main/fight-hand-text-icon.png' %}" alt="fight-hand-text-icon" style="width: 100px;">
                 </div>
                 <div class="">
                     <button class="btn btn-light btn-sm rounded-3"><strong>Reload</strong></button>
@@ -78,13 +42,7 @@
             <li class="nav-item" role="presentation">
                 <button class="btn nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal"
                         type="button" role="tab" aria-controls="personal" aria-selected="true">
-                    Personal <a href="https://www.w3schools.com" class="btn btn-sm btn-close"></a>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="environment-tab" data-bs-toggle="tab" data-bs-target="#environment"
-                        type="button" role="tab" aria-controls="environment" aria-selected="false">
-                    Employment <a href="https://www.google.com" class="btn btn-sm btn-close"></a>
+                    Empty Tab <a class="btn btn-sm btn-close"></a>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -97,10 +55,7 @@
         <!-- Tab contents -->
         <div class="tab-content" id="TabContent">
             <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                <textarea name="TabContent1" id="TabContent1" class="border border-top-0">Enter something here...</textarea>
-            </div>
-            <div class="tab-pane fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
-                <textarea name="TabContent2" id="TabContent2" class="border border-top-0">Another tab</textarea>
+                <textarea name="TabContent1" id="TabContent1" class="border border-top-0" placeholder="your text goes here..."></textarea>
             </div>
         </div>
 
@@ -112,46 +67,25 @@
     <!-- inital Modal -->
     <div class="modal fade Custom-modal-transparent-bg" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
         <div  class=" modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content Custom-modal-color text-white ">
-                <!-- modal footer -->
-                <div class="modal-header border-0 p-2 " >
-                    <div class="Custom-modal-img-bg w-100 h-100 p-2 rounded-1">
-                        <h6 class="text-start m-0"><strong>Password required</strong></h6>
-                    </div>
-                </div>
-                <!-- modal footer -->
-                <div class="modal-body">
-                    <p class="fst-italic" style="font-size: 15.5px;">This site (this URL) is already occupied. If this is your site enter the password, or you can try using <a href="/" class="text-white">different site</a>.</p>
-                    <div>
-                        <label for="password-input" class="col-10" style="font-size: 13px;">
-                            <strong>Password used to encrypt this site:</strong>
-                        </label>
-                        <input type="password" class="col-10">
-                    </div>
-                </div>
-                <!-- modal footer -->
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light">
-                        <strong class="text-black">Decrypt this site</strong>
-                    </button>
-                </div>
+            <div class="modal-content Custom-modal-color text-white " id="myModal-content">
+              <!-- modal content will filled by the script -->  
             </div>
         </div>
     </div>
 
+    <!-- BS5.3 script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
 
-    <!-- script for triggering the inital modal -->
-    <script type="text/javascript">
-        const initModal = document.getElementById('myModal')
-        document.addEventListener('DOMContentLoaded', function() {
-            const myModal = new bootstrap.Modal(initModal);
-            myModal.show();
-        });
-
+    <!-- passing veriables python -> HTML -> JS -->
+    <script>
+        const currentURL = "{{ title }}";
+        const init_modal_state = "{{ init_modal_state }}";
     </script>
+
+    <!-- actual script -->
+    <script src="{% static 'js/main.js' %}"></script>
 
 </body>
 
