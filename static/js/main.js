@@ -7,7 +7,7 @@ var tabCounter = 1;
 
 
 //New Tab button
-function addTab() {
+function addTab(fillingContent='') {
     const tabList = tabListParent.querySelectorAll("li");
 
     /* Tab nav */ 
@@ -30,7 +30,7 @@ function addTab() {
     div.setAttribute("role", "tabpanel");
     div.setAttribute("aria-labelledby", `tab-${tabCounter}`);
     div.innerHTML = `
-        <textarea name="TabContent${tabCounter}" id="TabContent${tabCounter}" class="border border-top-0" placeholder="your text goes here...${tabCounter}"></textarea>
+        <textarea name="TabContent${tabCounter}" id="TabContent${tabCounter}" class="border border-top-0" placeholder="your text goes here...${tabCounter}">${fillingContent}</textarea>
     `
     tabContentParent.appendChild(div);
 
@@ -58,6 +58,20 @@ function closeTab(tabId) {
     }
 }
 
+// tabs replacing function if it is exist
+function repalceTabs(data) {
+    //Collecting tabs
+    tabs = data["tabs"];
+    //Adding Tabs
+    for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
+        tab = tabs[tabIndex];
+        addTab(tab["text"]);
+    };
+    //Removing the existing tab (id=0)
+    closeTab(0);
+}
+
+
 /*BS5.3 Modal related scripts*/
 
 
@@ -82,7 +96,7 @@ const contentExist = `
     </div>
     <!-- modal footer -->
     <div class="modal-footer border-0">
-        <button type="button" class="btn btn-light">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
             <strong class="text-black">Decrypt this site</strong>
         </button>
     </div>
@@ -103,8 +117,8 @@ const contentNew = `
     </div>
     <!-- modal footer -->
     <div class="modal-footer border-0">
-        <button type="button" class="btn btn-light">
-            <strong class="text-black"  data-bs-dismiss="modal">Create site</strong>
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+            <strong class="text-black" >Create site</strong>
         </button>
         <a href="/" class="btn btn-light">
             <strong class="text-black">Cancel</strong>
@@ -116,6 +130,19 @@ const contentNew = `
 const myModalContent = document.getElementById("myModal-content");
 if (init_modal_state === "exist") {
     myModalContent.innerHTML = contentExist;
+    //Fetching data from the REST API
+    xhr = new XMLHttpRequest();
+    url = `/api/pages/${currentURL}`;
+
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            data = JSON.parse(xhr.responseText);
+            repalceTabs(data);
+        }
+    };
+    xhr.send(null);
+
 } else if (init_modal_state === "new") {
     myModalContent.innerHTML = contentNew;
 };
