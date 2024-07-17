@@ -7,7 +7,7 @@ var tabCounter = 1;
 
 
 //New Tab button
-function addTab(fillingContent='') {
+function addTab(fillingContent='', tabTitle='Empty Tab') {
     const tabList = tabListParent.querySelectorAll("li");
 
     /* Tab nav */ 
@@ -18,7 +18,7 @@ function addTab(fillingContent='') {
     li.innerHTML = `
         <button class="btn nav-link" id="tab-btn-${tabCounter}" data-bs-toggle="tab" data-bs-target="#tab${tabCounter}"
                 type="button" role="tab" aria-controls="tab${tabCounter}" aria-selected="true">
-            Empty Tab <a class="btn btn-sm btn-close" onclick="closeTab(${tabCounter})"></a>
+            <span id="tab-title-${tabCounter}">${tabTitle}</span> <a class="btn btn-sm btn-close" onclick="closeTab(${tabCounter})"></a>
         </button>
     `
     tabListParent.insertBefore(li, tabList[tabList.length-1]);  // adding <li> to tabList befor '+' icon
@@ -34,8 +34,29 @@ function addTab(fillingContent='') {
     `
     tabContentParent.appendChild(div);
 
+    
+    //adding event listner
+    let textArea = document.getElementById(`TabContent${tabCounter}`);
+    let tabTitleSpan = document.getElementById(`tab-title-${tabCounter}`);
+    textArea.addEventListener("input", function() {
+        var textAreaText = textArea.value.replace(/\n|\r|\t|\v|\b|\f/g, '');
+        if(textAreaText.length > 0 ){
+            tabTitleSpan.innerText = textAreaText.slice(0, 11);
+        } else {
+            tabTitleSpan.innerText = "Empty Tab";
+        }
+    });
+    
     //incrementing 'tabCounter'
     tabCounter++;
+}
+
+//fall back to prev tab function
+function fallBackToFirstTab(){
+    const prevTabBtnList = document.querySelectorAll(`.nav-item button`); // collecting all 'tab nav' (new)
+    const prevTabBtn = prevTabBtnList[0];
+    const tabTrigger = new bootstrap.Tab(prevTabBtn);
+    tabTrigger.show();
 }
 
 // Close Tab Button 
@@ -51,29 +72,46 @@ function closeTab(tabId) {
         tabContent.remove();
 
         /* fall back to prev tab */
-        const prevTabBtnList = document.querySelectorAll(`.nav-item button`); // collecting all 'tab nav' (new)
-        const prevTabBtn = prevTabBtnList[prevTabBtnList.length - 1];
-        const tabTrigger = new bootstrap.Tab(prevTabBtn);
-        tabTrigger.show();
+        fallBackToFirstTab();
     }
 }
 
-// tabs replacing function if it is exist
+// tabs replacing button function if it is exist
 function repalceTabs(data) {
     //Collecting tabs
     tabs = data["tabs"];
     //Adding Tabs
     for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
         tab = tabs[tabIndex];
-        addTab(tab["text"]);
+        addTab(tab["text"], tabTitle=tab["text"].slice(0, 11));
     };
     //Removing the existing tab (id=0)
-    closeTab(0);
+    if (document.getElementById(`tab${0}`)) {
+        closeTab(0);
+    }
 }
 
 
-/*BS5.3 Modal related scripts*/
+//Reload button function
+function reloadData(){
+    // Collecting the orginal data from API
+    collectDataFromAPI();
+    // Removing all the old elements
+    const tabBtnList = document.querySelectorAll(`.nav-item button`);
+    tabBtnList.forEach(btn => {
+        btn.remove();
+    });
+    const tabContentList = document.querySelectorAll(".tab-pane");
+    tabContentList.forEach(content => {
+        content.remove();
+    });
+    // Replacing it with new fresh elements
+    repalceTabs(dataFromAPI);
+    // fall back to prev tab
+    fallBackToFirstTab();
+};
 
+/*BS5.3 Modal related scripts*/
 
 //init modal contents
 const contentExist = `
@@ -96,7 +134,7 @@ const contentExist = `
     </div>
     <!-- modal footer -->
     <div class="modal-footer border-0">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="repalceTabs(dataFromAPI)">
             <strong class="text-black">Decrypt this site</strong>
         </button>
     </div>
@@ -130,18 +168,7 @@ const contentNew = `
 const myModalContent = document.getElementById("myModal-content");
 if (init_modal_state === "exist") {
     myModalContent.innerHTML = contentExist;
-    //Fetching data from the REST API
-    xhr = new XMLHttpRequest();
-    url = `/api/pages/${currentURL}`;
-
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            data = JSON.parse(xhr.responseText);
-            repalceTabs(data);
-        }
-    };
-    xhr.send(null);
+    collectDataFromAPI();
 
 } else if (init_modal_state === "new") {
     myModalContent.innerHTML = contentNew;
@@ -154,3 +181,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const myModal = new bootstrap.Modal(initModal);
     myModal.show();
 });
+
+
+/* API related scripts */
+
+//global veriable
+var dataFromAPI;
+
+//Fetching data from the REST API
+function collectDataFromAPI(){
+    xhr = new XMLHttpRequest();
+    url = `/api/pages/${currentURL}`;
+
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            data = JSON.parse(xhr.responseText);
+            //making it global var
+            dataFromAPI = data;
+        }
+    };
+    xhr.send(null);
+    return
+}
