@@ -94,6 +94,7 @@ function repalceTabs(data) {
 
 //Reload button function
 function reloadData(){
+    loader('show');
     // Collecting the orginal data from API
     collectDataFromAPI();
     // Removing all the old elements
@@ -109,6 +110,10 @@ function reloadData(){
     repalceTabs(dataFromAPI);
     // fall back to prev tab
     fallBackToFirstTab();
+    //delaying the dismiss
+    setTimeout(() => {
+        loader('dismiss');
+    }, 500);
 };
 
 /*BS5.3 Modal related scripts*/
@@ -182,6 +187,21 @@ document.addEventListener('DOMContentLoaded', function() {
     myModal.show();
 });
 
+//Function for triggering the loader modal 
+//Allowed 'state' = ['show', 'dismiss']
+const loaderModal = new bootstrap.Modal(document.getElementById("loaderModal"));
+const loaderModalBtn = document.getElementById("loaderModalBtn");
+function loader(state){
+    if(state === 'show'){
+        loaderModal.show();
+    }
+    if(state === 'dismiss'){
+        console.log("dismiss block");
+        console.log(loaderModal);
+        loaderModalBtn.click();
+        
+    }
+}
 
 /* API related scripts */
 
@@ -202,5 +222,4 @@ function collectDataFromAPI(){
         }
     };
     xhr.send(null);
-    return
 }
