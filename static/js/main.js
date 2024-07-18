@@ -1,5 +1,17 @@
 /*functionality related scripts*/
 
+//adding event listner for 0th Tab
+let textArea = document.getElementById(`TabContent0`);
+let tabTitleSpan = document.getElementById(`tab-title-0`);
+textArea.addEventListener("input", function() {
+    var textAreaText = textArea.value.replace(/\n|\r|\t|\v|\b|\f/g, '');
+    if(textAreaText.length > 0 ){
+        tabTitleSpan.innerText = textAreaText.slice(0, 11);
+    } else {
+        tabTitleSpan.innerText = "Empty Tab";
+    }
+});
+
 const tabListParent = document.getElementById("TabListParent");
 const tabContentParent = document.getElementById("TabContentParent");
 
@@ -96,20 +108,28 @@ function repalceTabs(data) {
 function reloadData(){
     loader('show');
     // Collecting the orginal data from API
-    collectDataFromAPI();
-    // Removing all the old elements
-    const tabBtnList = document.querySelectorAll(`.nav-item button`);
-    tabBtnList.forEach(btn => {
-        btn.remove();
-    });
-    const tabContentList = document.querySelectorAll(".tab-pane");
-    tabContentList.forEach(content => {
-        content.remove();
-    });
-    // Replacing it with new fresh elements
-    repalceTabs(dataFromAPI);
-    // fall back to prev tab
-    fallBackToFirstTab();
+    collectDataFromAPI(
+        function() {
+            // Removing all the old elements
+            const tabBtnList = document.querySelectorAll(`.nav-item button`);
+            tabBtnList.forEach(btn => {
+                btn.remove();
+            });
+            const tabContentList = document.querySelectorAll(".tab-pane");
+            tabContentList.forEach(content => {
+                content.remove();
+            });
+            if (dataFromAPI === "no data") {
+                addTab();
+                fallBackToFirstTab();
+            } else {
+                // Replacing it with new fresh elements
+                repalceTabs(dataFromAPI);
+                // fall back to prev tab
+                fallBackToFirstTab();
+            };
+        }
+    );
     //delaying the dismiss
     setTimeout(() => {
         loader('dismiss');
@@ -196,8 +216,6 @@ function loader(state){
         loaderModal.show();
     }
     if(state === 'dismiss'){
-        console.log("dismiss block");
-        console.log(loaderModal);
         loaderModalBtn.click();
         
     }
@@ -207,19 +225,27 @@ function loader(state){
 
 //global veriable
 var dataFromAPI;
-
-//Fetching data from the REST API
-function collectDataFromAPI(){
-    xhr = new XMLHttpRequest();
-    url = `/api/pages/${currentURL}`;
+// Fetching data from the REST API
+function collectDataFromAPI(callback){  //callback help to run a function after its execution
+    const xhr = new XMLHttpRequest();
+    const url = `/api/pages/${currentURL}`;
 
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            data = JSON.parse(xhr.responseText);
-            //making it global var
-            dataFromAPI = data;
+        if (xhr.readyState === 4) {
+            if (xhr.status === 404) {
+                console.log("No data found");
+                dataFromAPI = "no data";
+                if (callback) callback(dataFromAPI);
+            } else if (xhr.status === 200) {
+                const data = JSON.parse(xhr.responseText);
+                dataFromAPI = data;
+                if (callback) callback(dataFromAPI);
+            } else {
+                console.log("Error fetching data: " + xhr.status);
+                if (callback) callback(null);
+            }
         }
     };
-    xhr.send(null);
+    xhr.send();
 }
