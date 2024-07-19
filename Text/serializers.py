@@ -6,7 +6,8 @@ class TabSerializer(serializers.ModelSerializer):
         model = Tab
         fields = [
             'id',
-            'text'
+            'text',
+            'page'
         ]
 
 class PageSerializer(serializers.ModelSerializer):
@@ -15,6 +16,7 @@ class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = [
+            'id',
             'url', 
             'tabs',
         ]

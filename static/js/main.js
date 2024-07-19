@@ -131,10 +131,18 @@ function reloadData(){
         }
     );
     //delaying the dismiss
-    setTimeout(() => {
+    delay = setTimeout(() => {
         loader('dismiss');
+        clearTimeout(delay);
     }, 500);
 };
+
+// delete btn function
+function deleteBtn(){
+    deleteDataFromAPI();
+}
+
+
 
 /*BS5.3 Modal related scripts*/
 
@@ -248,4 +256,47 @@ function collectDataFromAPI(callback){  //callback help to run a function after 
         }
     };
     xhr.send();
+}
+
+// delete data from api function
+function deleteDataFromAPI() {
+    const xhr = new XMLHttpRequest();
+    const url = `/api/pages/${currentURL}`;
+    
+    xhr.open('DELETE', url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 204) {
+                location.reload();
+            }
+        }
+    };
+    xhr.send();
+}
+
+
+/* Encrypt and Decrypt */
+
+// Function to generate a key from the password
+function generateKey(password) {
+    // Use SHA-256 to hash the password
+    const hashedPassword = CryptoJS.SHA256(password);
+    // Use the first 32 bytes of the hashed password to create the key
+    const key = CryptoJS.enc.Base64.stringify(hashedPassword);
+    return key;
+}
+
+// Encrypt the message
+function encryptMessage(message, password) {
+    const key = generateKey(password);
+    const encryptedMessage = CryptoJS.AES.encrypt(message, key).toString();
+    return encryptedMessage;
+}
+
+// Decrypt the message
+function decryptMessage(encryptedMessage, password) {
+    const key = generateKey(password);
+    const decryptedBytes = CryptoJS.AES.decrypt(encryptedMessage, key);
+    const decryptedMessage = decryptedBytes.toString(CryptoJS.enc.Utf8);
+    return decryptedMessage;
 }
