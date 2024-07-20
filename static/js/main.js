@@ -139,7 +139,18 @@ function reloadData(){
 
 // delete btn function
 function deleteBtn(){
-    deleteDataFromAPI();
+    deletePageFromAPI();
+}
+
+// save btn function
+function saveBtn() {
+    deleteTabsFromAPI(dataFromAPI["tabs"]);
+    //console.log(document.querySelectorAll("textarea"));
+    //document.querySelectorAll("textarea").forEach((element) => {
+    //    console.log(element.value);
+    //});
+    addTabsToAPI(document.querySelectorAll("textarea"));
+
 }
 
 
@@ -258,8 +269,8 @@ function collectDataFromAPI(callback){  //callback help to run a function after 
     xhr.send();
 }
 
-// delete data from api function
-function deleteDataFromAPI() {
+// delete Page from api function
+function deletePageFromAPI(reload=true) {
     const xhr = new XMLHttpRequest();
     const url = `/api/pages/${currentURL}`;
     
@@ -267,11 +278,56 @@ function deleteDataFromAPI() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 204) {
-                location.reload();
+                if(reload === true) location.reload();
             }
         }
     };
     xhr.send();
+}
+
+function deleteTabsFromAPI(tabs) {
+    tabs.forEach((tab) => {
+        const xhr = new XMLHttpRequest();
+        var url = "/api/tabs/";
+        const tabId = tab["id"];
+        url = url+tabId+"/" //new url with tab id
+
+        xhr.open("DELETE", url, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 204) {
+                    console.log("tab deleted");
+                }else{
+                    console.log("tab not deleted");
+                }
+            }
+        }
+        xhr.send();
+    });
+}
+
+function addTabsToAPI(tabs) {
+    tabs.forEach((textarea) => {
+        const xhr = new XMLHttpRequest();
+        const url = "/api/tabs/";
+
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 204) {
+                    console.log("tab posted");
+                }else{
+                    console.log("tab not posted");
+                }
+            }
+        }
+        const data = {
+            text: textarea.value,
+            page: dataFromAPI["id"]
+        }
+        xhr.send(JSON.stringify(data));
+    })
 }
 
 
