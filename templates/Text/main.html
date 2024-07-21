@@ -29,7 +29,7 @@
                 <div class="">
                     <button class="btn btn-light btn-sm rounded-3" onclick="reloadData()"><strong>Reload</strong></button>
                     <button class="btn btn-light btn-sm rounded-3" onclick="saveBtn()"><strong>Save</strong></button>
-                    <button class="btn btn-light btn-sm rounded-3"><strong>Change password</strong></button>
+                    <button class="btn btn-light btn-sm rounded-3" onclick="changeOrNewPassword()"><strong>Change password</strong></button>
                     <button class="btn btn-light btn-sm rounded-3" onclick="deleteBtn()"><strong>Delete</strong></button>
                 </div>
             </div>
@@ -83,6 +83,46 @@
                 <center><img src="/static/img/main/loader.gif" alt="loading" height="32px" width="32px"></center>
             </div>
             <button type="button" class="hidden" data-bs-dismiss="modal" id="loaderModalBtn"  hidden></button>
+        </div>
+    </div>
+
+    <!-- new Password Modal -->
+    <div class="modal fade Custom-modal-transparent-bg" id="passwordModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div  class=" modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content Custom-modal-color text-white " id="passwordModal-content">
+                <!-- modal header -->
+                <div class="modal-header border-0 p-2 " >
+                    <div class="Custom-modal-img-bg w-100 h-100 p-2 rounded-1">
+                        <h6 class="text-start m-0"><strong>Create password</strong></h6>
+                    </div>
+                </div>
+                <!-- modal body -->
+                <div class="modal-body">
+                    <p class="fst-italic" style="font-size: 15.5px;">Make sure to remember the password. We don't store passwords, just the encrypted data. (If the password is forgotten, the data can't be accessed.)</p>
+                    <p class="fst-italic" style="font-size: 15.5px;">Longer passwords are more secure.</p>
+                    <div>
+                        <label for="password-input" class="col-10" style="font-size: 13px;">
+                            <strong>Password</strong>
+                        </label>
+                        <input type="password" class="col-10" id="password1">
+                    </div>
+                    <div>
+                        <label for="password-input" class="col-10" style="font-size: 13px;">
+                            <strong>Repeat password</strong>
+                        </label>
+                        <input type="password" class="col-10" id="password2">
+                    </div>
+                </div>
+                <!-- modal footer -->
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="changePassword()">
+                        <strong class="text-black">Save</strong>
+                    </button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <strong class="text-black">Cancel</strong>
+                    </button>
+                </div>  
+            </div>
         </div>
     </div>
 

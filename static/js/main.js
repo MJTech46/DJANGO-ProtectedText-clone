@@ -156,7 +156,11 @@ function saveBtn() {
     loader('dismiss');
 }
 
-
+// change password btn
+function changeOrNewPassword() {
+    const askPasswordModal = new bootstrap.Modal(document.getElementById("passwordModal"));
+    askPasswordModal.show();
+}
 
 /*BS5.3 Modal related scripts*/
 
@@ -176,7 +180,7 @@ const contentExist = `
             <label for="password-input" class="col-10" style="font-size: 13px;">
                 <strong>Password used to encrypt this site:</strong>
             </label>
-            <input type="password" class="col-10">
+            <input type="password" class="col-10" id="password">
         </div>
     </div>
     <!-- modal footer -->
@@ -243,6 +247,24 @@ function loader(state){
             loaderModalBtn.click();
             clearTimeout(delay);
         }, 500);
+    }
+}
+
+// new password function
+const password1 = document.getElementById("password1");
+const password2 = document.getElementById("password2");
+function changePassword() {
+    if (password1.value.length > 0 && password2.value.length > 0) {
+        if (password1.value === password2.value) {
+            console.log("password changed!");
+            password1.value = password2.value = '';
+        }else {
+            alert("Password does not match!");
+            changeOrNewPassword();
+        }
+    } else {
+        alert("please fill the passwords!");
+        changeOrNewPassword();
     }
 }
 
