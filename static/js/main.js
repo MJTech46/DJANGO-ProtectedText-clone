@@ -119,7 +119,8 @@ function reloadData(){
             tabContentList.forEach(content => {
                 content.remove();
             });
-            if (dataFromAPI === "no data") {
+            console.log(dataFromAPI);
+            if (dataFromAPI === "no data" || dataFromAPI["tabs"].length === 0 ) {
                 addTab();
                 fallBackToFirstTab();
             } else {
@@ -130,27 +131,29 @@ function reloadData(){
             };
         }
     );
-    //delaying the dismiss
-    delay = setTimeout(() => {
-        loader('dismiss');
-        clearTimeout(delay);
-    }, 500);
+    loader('dismiss');
 };
 
 // delete btn function
 function deleteBtn(){
+    loader('show');
     deletePageFromAPI();
+    loader('dismiss');
 }
 
 // save btn function
 function saveBtn() {
-    deleteTabsFromAPI(dataFromAPI["tabs"]);
-    //console.log(document.querySelectorAll("textarea"));
-    //document.querySelectorAll("textarea").forEach((element) => {
-    //    console.log(element.value);
-    //});
-    addTabsToAPI(document.querySelectorAll("textarea"));
-
+    loader('show');
+    collectDataFromAPI();
+    if (dataFromAPI !== "no data"){
+        deleteTabsFromAPI(dataFromAPI["tabs"]);
+        addTabsToAPI(document.querySelectorAll("textarea"));
+    }
+    if (dataFromAPI === "no data"){
+        addPageToAPI();
+        addTabsToAPI(document.querySelectorAll("textarea"));
+    }
+    loader('dismiss');
 }
 
 
@@ -235,8 +238,11 @@ function loader(state){
         loaderModal.show();
     }
     if(state === 'dismiss'){
-        loaderModalBtn.click();
-        
+        //delaying the dismiss
+        delay = setTimeout(() => {
+            loaderModalBtn.click();
+            clearTimeout(delay);
+        }, 500);
     }
 }
 
@@ -249,7 +255,7 @@ function collectDataFromAPI(callback){  //callback help to run a function after 
     const xhr = new XMLHttpRequest();
     const url = `/api/pages/${currentURL}`;
 
-    xhr.open('GET', url, true);
+    xhr.open('GET', url, false);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 404) {
@@ -274,7 +280,7 @@ function deletePageFromAPI(reload=true) {
     const xhr = new XMLHttpRequest();
     const url = `/api/pages/${currentURL}`;
     
-    xhr.open('DELETE', url, true);
+    xhr.open('DELETE', url, false);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 204) {
@@ -292,7 +298,7 @@ function deleteTabsFromAPI(tabs) {
         const tabId = tab["id"];
         url = url+tabId+"/" //new url with tab id
 
-        xhr.open("DELETE", url, true);
+        xhr.open("DELETE", url, false);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 204) {
@@ -311,11 +317,11 @@ function addTabsToAPI(tabs) {
         const xhr = new XMLHttpRequest();
         const url = "/api/tabs/";
 
-        xhr.open("POST", url, true);
+        xhr.open("POST", url, false);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-                if (xhr.status === 204) {
+                if (xhr.status === 201) {
                     console.log("tab posted");
                 }else{
                     console.log("tab not posted");
@@ -328,6 +334,29 @@ function addTabsToAPI(tabs) {
         }
         xhr.send(JSON.stringify(data));
     })
+}
+
+function addPageToAPI() {
+    const xhr = new XMLHttpRequest();
+    const url = "/api/pages/";
+
+    xhr.open("POST", url, false);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 201) {
+                console.log("page created");
+                dataFromAPI = JSON.parse(xhr.responseText);
+                console.log(dataFromAPI);
+            }else{
+                console.log("page not created");
+            }
+        }
+    }
+    const data = {
+        url:currentURL
+    }
+    xhr.send(JSON.stringify(data));
 }
 
 
