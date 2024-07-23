@@ -143,16 +143,15 @@ function deleteBtn(){
 
 // save btn function
 function saveBtn() {
-    loader('show');
     collectDataFromAPI();
     if (dataFromAPI !== "no data"){
         deleteTabsFromAPI(dataFromAPI["tabs"]);
-        addTabsToAPI(document.querySelectorAll("textarea"));
+        addTabsToAPI(document.querySelectorAll("textarea")); 
     }
     if (dataFromAPI === "no data"){
-        addPageToAPI();
-        addTabsToAPI(document.querySelectorAll("textarea"));
+        changeOrNewPassword();// also modal
     }
+    loader('show');
     loader('dismiss');
 }
 
@@ -162,6 +161,11 @@ function changeOrNewPassword() {
     askPasswordModal.show();
 }
 
+//collect password
+var password;
+function collectPassword(){
+    password = document.getElementById("password").value;
+}
 /*BS5.3 Modal related scripts*/
 
 //init modal contents
@@ -180,12 +184,12 @@ const contentExist = `
             <label for="password-input" class="col-10" style="font-size: 13px;">
                 <strong>Password used to encrypt this site:</strong>
             </label>
-            <input type="password" class="col-10" id="password">
+            <input type="password" class="col-10" id="password" required>
         </div>
     </div>
     <!-- modal footer -->
     <div class="modal-footer border-0">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="repalceTabs(dataFromAPI)">
+        <button type="submit" class="btn btn-light" data-bs-dismiss="modal" onclick="collectPassword(); repalceTabs(dataFromAPI);">
             <strong class="text-black">Decrypt this site</strong>
         </button>
     </div>
@@ -258,6 +262,9 @@ function changePassword() {
         if (password1.value === password2.value) {
             console.log("password changed!");
             password1.value = password2.value = '';
+            // also save data to the api
+            addPageToAPI();
+            saveBtn();
         }else {
             alert("Password does not match!");
             changeOrNewPassword();
