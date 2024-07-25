@@ -95,7 +95,13 @@ function repalceTabs(data) {
     //Adding Tabs
     for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
         tab = tabs[tabIndex];
-        addTab(tab["text"], tabTitle=tab["text"].slice(0, 11));
+        var tabText = decryptMessage(tab["text"], password)
+        if (tabText !== "") {
+            var tabTitl = tabText.slice(0, 11);
+        } else {
+            var tabTitl = "Empty Tab";
+        }
+        addTab(tabText, tabTitl);
     };
     //Removing the existing tab (id=0)
     if (document.getElementById(`tab${0}`)) {
@@ -143,6 +149,7 @@ function deleteBtn(){
 
 // save btn function
 function saveBtn() {
+    loader('show');
     collectDataFromAPI();
     if (dataFromAPI !== "no data"){
         deleteTabsFromAPI(dataFromAPI["tabs"]);
@@ -151,7 +158,6 @@ function saveBtn() {
     if (dataFromAPI === "no data"){
         changeOrNewPassword();// also modal
     }
-    loader('show');
     loader('dismiss');
 }
 
@@ -189,7 +195,7 @@ const contentExist = `
     </div>
     <!-- modal footer -->
     <div class="modal-footer border-0">
-        <button type="submit" class="btn btn-light" data-bs-dismiss="modal" onclick="collectPassword(); repalceTabs(dataFromAPI);">
+        <button type="submit" class="btn btn-light" onclick="decriptSiteBtn();">
             <strong class="text-black">Decrypt this site</strong>
         </button>
     </div>
@@ -229,13 +235,30 @@ if (init_modal_state === "exist") {
     myModalContent.innerHTML = contentNew;
 };
 
-
+var myModal;
 //script for triggering the inital modal
 const initModal = document.getElementById('myModal')
 document.addEventListener('DOMContentLoaded', function() {
-    const myModal = new bootstrap.Modal(initModal);
+    myModal = new bootstrap.Modal(initModal);
     myModal.show();
 });
+
+// decript this site btn
+function decriptSiteBtn() {
+    if (document.getElementById("password").value) {
+        collectPassword();
+        if (decryptMessage(dataFromAPI["tabs"][0]["text"], document.getElementById("password").value)) {
+            repalceTabs(dataFromAPI);
+            myModal.hide();
+        } else {
+            alert("wrong password");
+            document.getElementById("password").value = '';
+        }
+        
+    } else {
+        alert("please enter the password!");
+    }
+}
 
 //Function for triggering the loader modal 
 //Allowed 'state' = ['show', 'dismiss']
@@ -260,6 +283,7 @@ const password2 = document.getElementById("password2");
 function changePassword() {
     if (password1.value.length > 0 && password2.value.length > 0) {
         if (password1.value === password2.value) {
+            password = password1.value;
             console.log("password changed!");
             password1.value = password2.value = '';
             // also save data to the api
@@ -357,8 +381,14 @@ function addTabsToAPI(tabs) {
                 }
             }
         }
+        var text;
+        if (textarea.value === "") {
+            text = "Empty Tab";
+        } else {
+            text = textarea.value;
+        }
         const data = {
-            text: textarea.value,
+            text: encryptMessage(text, password),
             page: dataFromAPI["id"]
         }
         xhr.send(JSON.stringify(data));
